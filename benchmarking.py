@@ -14,6 +14,7 @@ sheet_url = st.secrets["private_gsheets_url"]
 sheet = client.open_by_url(sheet_url)
 tvpi_gsheet = sheet.worksheet('tvpi')
 dpi_gsheet = sheet.worksheet('dpi')
+footnote_gsheet = sheet.worksheet('footnotes')
 
 ## Password function ######################################################################
 def check_password():
@@ -50,6 +51,14 @@ if check_password():
 	tab1, tab2, = st.tabs(["TVPI", "DPI"])
 
 	## IMPORT AND CLEAN DATA ############################################################
+
+	@st.cache_data
+	def import_footnotes():
+		all_data_fn = pd.DataFrame(footnote_gsheet.get_all_records())
+		all_data_fn = all_data_fn.reset_index(drop=True)
+		return(all_data_fn)
+
+	all_data_fn = import_footnotes()	
 
 	@st.cache_data
 	def import_tvpi():
@@ -89,7 +98,6 @@ if check_password():
 
 	all_data_dpi = import_dpi()
 
-	# import_dpi()
 	## FUNCTIONS ########################################################################
 
 	# function for converting the user selected dataframe into a CSV
@@ -97,7 +105,6 @@ if check_password():
 	def convert_df(df):
 		return(df.to_csv().encode('utf-8'))
 
-	#user input to calculate their own quartile - What is needed? , TVPI, vintage year, as of date
 	@st.cache_data
 	def qcheck_tvpi(vy, asof, tvpi):
 		try:
@@ -115,6 +122,7 @@ if check_password():
 		except:
 			return(st.write("A quartlie cannot be calculated with your inputs. Your vintage year is too old to have recent performance. Please double check your vintage year and performance quarter."))
 
+			
 	@st.cache_data		
 	def qcheck_dpi(vy, asof, dpi):
 		try:
@@ -153,12 +161,18 @@ if check_password():
 
 		csv_tvpi = convert_df(as_of_df[selected_columns])
 
+		st.divider()
+
 		# button creation
 		st.download_button(
 			label="Download data as CSV",
 			data=csv_tvpi,
 			file_name='benchmark_data_tvpi',
 			mime='text/csv')
+
+
+		with st.expander("Benchmark Composition:"):
+			st.write(all_data_fn.loc[all_data_fn['As of Quarter'] == as_of_date]['Footnote'].item())
 
 		st.divider()
 		st.subheader("Benchmark Your TVPI")
@@ -169,14 +183,14 @@ if check_password():
 		as_of_user_selected = st.selectbox('Performance as of', as_of_user)
 		number = st.number_input('Insert Net TVPI:')
 		
-		# st.text_area("Your TVPI is: ", qcheck_tvpi(user_vy_selected, as_of_user_selected, number), height=100, disabled=True)
 		st.metric(label='Your TVPI is: ', value=qcheck_tvpi(user_vy_selected, as_of_user_selected, number))
 
 		st.divider()
 
-	with st.expander("Data Footnote"):
-		st.write("Based on data compiled from 2,225 venture capital funds, including fully liquidated partnerships, formed between 1997 and 2020. Internal rates of returns are net of fees, expenses and carried interest. Cambridge Associates research shows that most funds take at least six years to settle into their final quartile ranking, and previous to this settling they typically rank in 2-3 other quartiles; therefore fund or benchmark performance metrics from more recent vintage years may be less meaningful.")
+		with st.expander("Benchmark Composition:"):
+			st.write(all_data_fn.loc[all_data_fn['As of Quarter'] == as_of_user_selected]['Footnote'].item())
 
+		st.divider()
 
 	# DPI tab ########################################################################################################################################################################
 
@@ -198,12 +212,17 @@ if check_password():
 
 		csv_dpi = convert_df(as_of_df_dpi[selected_columns_dpi])
 
+		st.divider()
+
 		# button creation
 		st.download_button(
 			label="Download data as CSV",
 			data=csv_dpi,
 			file_name='benchmark_data_dpi',
 			mime='text/csv')
+
+		with st.expander("Benchmark Composition"):
+			st.write(all_data_fn.loc[all_data_fn['As of Quarter'] == as_of_date_dpi]['Footnote'].item())
 
 		st.divider()
 		st.subheader("Benchmark Your DPI")
@@ -215,5 +234,10 @@ if check_password():
 		number_dpi = st.number_input('Insert DPI:')
 		
 		st.metric(label='Your DPI is: ', value=qcheck_dpi(user_vy_selected_dpi, as_of_user_selected_dpi, number_dpi))
+
+		st.divider()
+
+		with st.expander("Benchmark Composition"):
+			st.write(all_data_fn.loc[all_data_fn['As of Quarter'] == as_of_user_selected_dpi]['Footnote'].item())
 
 		st.divider()
