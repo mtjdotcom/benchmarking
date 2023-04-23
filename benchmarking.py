@@ -16,6 +16,11 @@ tvpi_gsheet = sheet.worksheet('tvpi')
 dpi_gsheet = sheet.worksheet('dpi')
 footnote_gsheet = sheet.worksheet('footnotes')
 
+# PAGE CONFIG ############################################################################
+
+st.set_page_config(
+    page_title="Benchmark App")
+
 ## Password function ######################################################################
 def check_password():
     """Returns `True` if the user had the correct password."""
