@@ -16,10 +16,12 @@ tvpi_gsheet = sheet.worksheet('tvpi')
 dpi_gsheet = sheet.worksheet('dpi')
 footnote_gsheet = sheet.worksheet('footnotes')
 
-# PAGE CONFIG ############################################################################
+# PAGE CONFIG ######################################################################
 
 st.set_page_config(
-    page_title="Benchmark App")
+    page_title="Benchmark App"
+)
+
 
 ## Password function ######################################################################
 def check_password():
@@ -150,8 +152,8 @@ if check_password():
 	with tab1:
 
 		#header
-		st.subheader("Download TVPI Benchmark Data")
-		st.caption("Please select the metrics, vintage year, and as of date below. Not all vintage years have performance figures available for all dates, e.g., 1981 vintage as of Q2 2018. There is no performance data available as of Q3 2014.")
+		st.subheader("Query TVPI Benchmark Data")
+		st.caption("Please select the metrics, vintage year, and as of date below. Not all vintage years have performance figures available for all dates, e.g., 1981 vintage as of Q2 2018. There is no performance data available as of Q3 2014. Benchmarks are Global Venture unless otherwise noted in the footnotes. US Venture is the only data available for some vintage years and dates. Please note, Global Venture benchmarks are majority US but include funds from both Europe and Asia.")
 
 		# create lists for selection and create multi selection box
 		by_vy = all_data_tvpi['Vintage Year'].unique().tolist()
@@ -162,18 +164,16 @@ if check_password():
 
 		# dataframe filtering/display
 		as_of_df = all_data_tvpi.loc[(all_data_tvpi['Vintage Year']==VY) & (all_data_tvpi['As of Quarter']==as_of_date)]
-		as_of_df[selected_columns]
-
-		csv_tvpi = convert_df(as_of_df[selected_columns])
+		st.dataframe(as_of_df[selected_columns].set_index(as_of_df[selected_columns].columns[0]))
 
 		st.divider()
 
-		# button creation
-		st.download_button(
-			label="Download data as CSV",
-			data=csv_tvpi,
-			file_name='benchmark_data_tvpi',
-			mime='text/csv')
+		# # button creation
+		# st.download_button(
+		# 	label="Download data as CSV",
+		# 	data=csv_tvpi,
+		# 	file_name='benchmark_data_tvpi',
+		# 	mime='text/csv')
 
 
 		with st.expander("Benchmark Composition:"):
@@ -201,8 +201,8 @@ if check_password():
 
 	with tab2:
 		#header
-		st.subheader("Download DPI Benchmark Data")
-		st.caption("Please select the metrics, vintage year, and as of date below. Not all vintage years have performance figures available for all dates, e.g., 1981 vintage as of Q2 2018. There is no performance data available as of Q3 2014.")
+		st.subheader("Query DPI Benchmark Data")
+		st.caption("Please select the metrics, vintage year, and as of date below. Not all vintage years have performance figures available for all dates, e.g., 1981 vintage as of Q2 2018. There is no performance data available as of Q3 2014. Benchmarks are Global Venture unless otherwise noted in the footnotes. US Venture is the only data available for some vintage years and dates. Please note, Global Venture benchmarks are majority US but include funds from both Europe and Asia.")
 
 		# create lists for selection and create multi selection box
 		by_vy_dpi = all_data_dpi['Vintage Year'].unique().tolist()
@@ -213,18 +213,18 @@ if check_password():
 
 		# dataframe filtering/display
 		as_of_df_dpi = all_data_dpi.loc[(all_data_dpi['Vintage Year']==VY_dpi) & (all_data_dpi['As of Quarter']==as_of_date_dpi)]
-		as_of_df_dpi[selected_columns_dpi]
+		st.dataframe(as_of_df_dpi[selected_columns_dpi].set_index(as_of_df_dpi[selected_columns_dpi].columns[0]))
 
-		csv_dpi = convert_df(as_of_df_dpi[selected_columns_dpi])
+		# csv_dpi = convert_df(as_of_df_dpi[selected_columns_dpi])
 
 		st.divider()
 
-		# button creation
-		st.download_button(
-			label="Download data as CSV",
-			data=csv_dpi,
-			file_name='benchmark_data_dpi',
-			mime='text/csv')
+		# # button creation
+		# st.download_button(
+		# 	label="Download data as CSV",
+		# 	data=csv_dpi,
+		# 	file_name='benchmark_data_dpi',
+		# 	mime='text/csv')
 
 		with st.expander("Benchmark Composition"):
 			st.write(all_data_fn.loc[all_data_fn['As of Quarter'] == as_of_date_dpi]['Footnote'].item())
