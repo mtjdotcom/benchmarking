@@ -54,6 +54,7 @@ def check_password():
 
 if check_password():
 	st.title("Benchmarking Tool")
+	st.caption("This application is used to benchmark venture capital funds by vintage year. You can use it to query performance data from the database or compare your performance against the same data at the bottom of the page. This is an internal tool for our community of VCs and LPs. Please do not share outside this group.")
 	col1, col2 = st.columns(2)
 	tab1, tab2, = st.tabs(["TVPI", "DPI"])
 
@@ -153,7 +154,7 @@ if check_password():
 
 		#header
 		st.subheader("Query TVPI Benchmark Data")
-		st.caption("Please select the metrics, vintage year, and as of date below. Not all vintage years have performance figures available for all dates, e.g., 1981 vintage as of Q2 2018. There is no performance data available as of Q3 2014. Benchmarks are Global Venture unless otherwise noted in the footnotes. US Venture is the only data available for some vintage years and dates. Please note, Global Venture benchmarks are majority US but include funds from both Europe and Asia.")
+		st.caption("Please select the metrics, vintage year, and as of date below. Not all vintage years have performance figures available for all dates, e.g., 1981 vintage as of Q2 2018. There is no performance data available as of Q3 2014. Benchmarks are Global Venture unless otherwise noted in the footnotes. US Venture is the only data available for some vintage years and dates. Global Venture benchmarks are majority US but include funds from Europe and Asia.")
 
 		# create lists for selection and create multi selection box
 		by_vy = all_data_tvpi['Vintage Year'].unique().tolist()
@@ -202,7 +203,7 @@ if check_password():
 	with tab2:
 		#header
 		st.subheader("Query DPI Benchmark Data")
-		st.caption("Please select the metrics, vintage year, and as of date below. Not all vintage years have performance figures available for all dates, e.g., 1981 vintage as of Q2 2018. There is no performance data available as of Q3 2014. Benchmarks are Global Venture unless otherwise noted in the footnotes. US Venture is the only data available for some vintage years and dates. Please note, Global Venture benchmarks are majority US but include funds from both Europe and Asia.")
+		st.caption("Please select the metrics, vintage year, and as of date below. Not all vintage years have performance figures available for all dates, e.g., 1981 vintage as of Q2 2018. There is no performance data available as of Q3 2014. Benchmarks are Global Venture unless otherwise noted in the footnotes. US Venture is the only data available for some vintage years and dates. Global Venture benchmarks are majority US but include funds from Europe and Asia.")
 
 		# create lists for selection and create multi selection box
 		by_vy_dpi = all_data_dpi['Vintage Year'].unique().tolist()
