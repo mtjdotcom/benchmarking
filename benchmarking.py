@@ -54,7 +54,7 @@ def check_password():
 
 if check_password():
 	st.title("Benchmarking Tool")
-	st.caption("This application is used to benchmark venture capital funds by vintage year. You can use it to query performance data from the database or compare your performance against the same data at the bottom of the page. This is an internal tool for our community of VCs and LPs. Please do not share outside this group.")
+	st.caption("This application is used to benchmark venture capital funds by vintage year. You can use it to query performance data from the database or compare your performance against your peers. This is an internal tool for our community of VCs and LPs. Please do not share outside this group.")
 	col1, col2 = st.columns(2)
 	tab1, tab2, = st.tabs(["TVPI", "DPI"])
 
@@ -86,8 +86,6 @@ if check_password():
 		return(all_data_tvpi)
 
 	all_data_tvpi = import_tvpi()
-
-	# import_tvpi()	
 
 	@st.cache_data
 	def import_dpi():
@@ -151,10 +149,25 @@ if check_password():
 	# TVPI tab ########################################################################################################################################################################
 
 	with tab1:
+	
+		st.subheader("Benchmark Your TVPI")
+		st.caption("Please select your Fund's vintage year and the quarter you would like to benchmark your TVPI against. Benchmarks are Global Venture by default, unless otherwise noted in the footnote. Please note that Global Venture is heavily weighted towards the US but includes funds from Europe and Asia. In some cases, only US Venture benchmarks are available.")
+		user_vy = all_data_tvpi['Vintage Year'].unique().tolist()
+		user_vy_selected = st.selectbox("Fund Vintage Year:", user_vy)
+		as_of_user = all_data_tvpi['As of Quarter'].unique().tolist()
+		as_of_user_selected = st.selectbox('Performance as of', as_of_user)
+		number = st.number_input('Insert Net TVPI:')
+		
+		st.metric(label='Your TVPI is: ', value=qcheck_tvpi(user_vy_selected, as_of_user_selected, number))
+
+		with st.expander("Benchmark Composition:"):
+			st.write(all_data_fn.loc[all_data_fn['As of Quarter'] == as_of_user_selected]['Footnote'].item())
+
+		st.divider()
 
 		#header
-		st.subheader("Query TVPI Benchmark Data")
-		st.caption("Please select the metrics, vintage year, and as of date below. Not all vintage years have performance figures available for all dates, e.g., 1981 vintage as of Q2 2018. There is no performance data available as of Q3 2014. Benchmarks are Global Venture unless otherwise noted in the footnotes. US Venture is the only data available for some vintage years and dates. Global Venture benchmarks are majority US but include funds from Europe and Asia.")
+		st.subheader("Query Historic TVPI Benchmark Data")
+		st.caption("Please select the metrics, vintage year, and as of date below. Not all vintage years have performance figures available for all dates, e.g., 1981 vintage as of Q2 2018. There is no performance data available as of Q3 2014. Benchmarks are Global Venture unless otherwise noted in the footnotes. US Venture is the only data available for some vintage years and dates. Global Venture benchmarks are majority US but include funds from Europe and Asia.")	
 
 		# create lists for selection and create multi selection box
 		by_vy = all_data_tvpi['Vintage Year'].unique().tolist()
@@ -167,42 +180,33 @@ if check_password():
 		as_of_df = all_data_tvpi.loc[(all_data_tvpi['Vintage Year']==VY) & (all_data_tvpi['As of Quarter']==as_of_date)]
 		st.dataframe(as_of_df[selected_columns].set_index(as_of_df[selected_columns].columns[0]))
 
-		st.divider()
-
-		# # button creation
-		# st.download_button(
-		# 	label="Download data as CSV",
-		# 	data=csv_tvpi,
-		# 	file_name='benchmark_data_tvpi',
-		# 	mime='text/csv')
-
 
 		with st.expander("Benchmark Composition:"):
 			st.write(all_data_fn.loc[all_data_fn['As of Quarter'] == as_of_date]['Footnote'].item())
-
-		st.divider()
-		st.subheader("Benchmark Your TVPI")
-		st.caption("Please select your Fund's vintage year and the quarter you would like to benchmark your TVPI against.")
-		user_vy = all_data_tvpi['Vintage Year'].unique().tolist()
-		user_vy_selected = st.selectbox("Fund Vintage Year:", user_vy)
-		as_of_user = all_data_tvpi['As of Quarter'].unique().tolist()
-		as_of_user_selected = st.selectbox('Performance as of', as_of_user)
-		number = st.number_input('Insert Net TVPI:')
-		
-		st.metric(label='Your TVPI is: ', value=qcheck_tvpi(user_vy_selected, as_of_user_selected, number))
-
-		st.divider()
-
-		with st.expander("Benchmark Composition:"):
-			st.write(all_data_fn.loc[all_data_fn['As of Quarter'] == as_of_user_selected]['Footnote'].item())
 
 		st.divider()
 
 	# DPI tab ########################################################################################################################################################################
 
 	with tab2:
+		
+		st.subheader("Benchmark Your DPI")
+		st.caption("Please select your Fund's vintage year and the quarter you would like to benchmark your DPI against. Benchmarks are Global Venture by default, unless otherwise noted in the footnote. Please note that Global Venture is heavily weighted towards the US but includes funds from Europe and Asia. In some cases, only US Venture benchmarks are available.")
+		user_vy_dpi = all_data_dpi['Vintage Year'].unique().tolist()
+		user_vy_selected_dpi = st.selectbox("Fund Vintage Year", user_vy_dpi)
+		as_of_user_dpi = all_data_dpi['As of Quarter'].unique().tolist()
+		as_of_user_selected_dpi = st.selectbox('Performance as of date', as_of_user_dpi)
+		number_dpi = st.number_input('Insert DPI:')
+		
+		st.metric(label='Your DPI is: ', value=qcheck_dpi(user_vy_selected_dpi, as_of_user_selected_dpi, number_dpi))
+
+		with st.expander("Benchmark Composition"):
+			st.write(all_data_fn.loc[all_data_fn['As of Quarter'] == as_of_user_selected_dpi]['Footnote'].item())
+
+		st.divider()
+
 		#header
-		st.subheader("Query DPI Benchmark Data")
+		st.subheader("Query Historic DPI Benchmark Data")
 		st.caption("Please select the metrics, vintage year, and as of date below. Not all vintage years have performance figures available for all dates, e.g., 1981 vintage as of Q2 2018. There is no performance data available as of Q3 2014. Benchmarks are Global Venture unless otherwise noted in the footnotes. US Venture is the only data available for some vintage years and dates. Global Venture benchmarks are majority US but include funds from Europe and Asia.")
 
 		# create lists for selection and create multi selection box
@@ -218,32 +222,7 @@ if check_password():
 
 		# csv_dpi = convert_df(as_of_df_dpi[selected_columns_dpi])
 
-		st.divider()
-
-		# # button creation
-		# st.download_button(
-		# 	label="Download data as CSV",
-		# 	data=csv_dpi,
-		# 	file_name='benchmark_data_dpi',
-		# 	mime='text/csv')
-
 		with st.expander("Benchmark Composition"):
 			st.write(all_data_fn.loc[all_data_fn['As of Quarter'] == as_of_date_dpi]['Footnote'].item())
-
-		st.divider()
-		st.subheader("Benchmark Your DPI")
-		st.caption("Please select your Fund's vintage year and the quarter you would like to benchmark your DPI against.")
-		user_vy_dpi = all_data_dpi['Vintage Year'].unique().tolist()
-		user_vy_selected_dpi = st.selectbox("Fund Vintage Year", user_vy_dpi)
-		as_of_user_dpi = all_data_dpi['As of Quarter'].unique().tolist()
-		as_of_user_selected_dpi = st.selectbox('Performance as of date', as_of_user_dpi)
-		number_dpi = st.number_input('Insert DPI:')
-		
-		st.metric(label='Your DPI is: ', value=qcheck_dpi(user_vy_selected_dpi, as_of_user_selected_dpi, number_dpi))
-
-		st.divider()
-
-		with st.expander("Benchmark Composition"):
-			st.write(all_data_fn.loc[all_data_fn['As of Quarter'] == as_of_user_selected_dpi]['Footnote'].item())
 
 		st.divider()
